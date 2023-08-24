@@ -56,6 +56,18 @@ class PoissonSolver():
         for i in range(n):
             self.A_mag[i] = np.linalg.norm(self.A[i])
             
+    def plot(self):
+        ps_init()
+        pcloud_name = "Solution query points"
+        pcloud = ps_add_pcloud(pcloud_name,self.query_points,len(self.query_points))
+        if (self.odim == 1):
+            ps_add_3D1(pcloud, self.A, "Solution")
+        elif (self.odim == 3):
+            self._compute_solution_magnitude()
+            ps_add_3D1(pcloud, self.A_mag, "Magnitude")
+            ps_add_3D3(pcloud,self.A,"Solution")
+        ps_add_sliceplace()
+        ps.show()
     def plot_with_mesh(self, meshfile):
         ps_init()
         pcloud_name = "Solution query points"
