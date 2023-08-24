@@ -1,8 +1,11 @@
 # Walk On Spheres
 
 Walkonspheres is a package for solving Poisson's equation with no boundary term :
+
 $$ \Delta u(x) = f(x) \quad \forall x \in \Omega$$
+
 $$ u(x) = 0 \qquad \quad \forall x \in \partial \Omega$$
+
 with $f$ the source term inside the domain $\Omega$, with $\partial \Omega$ it's boundary.
 
 This equation can represent magnetostatic problems, electrostatics, heat... Usually these problems have a structure that radiates a energy. The package is meant to take into account any type of geometry as the source of radiation, with an interface described below.
@@ -20,9 +23,8 @@ We use in this package the said *reverse* walk on spheres algorithm (Qi et al.).
 ![OneWalk](figures/onewalk.png)
 
 The walk needs at each step to know the distance from a point and the domain $\Omega$. Since in the problems we solve in this package, the domains $\Omega$ are simply defined by the fact that we want the solution to be zero at infinity, we set the domain to be a sphere a radius big enough to represent this infinity. Then to get the distance of a point on the walk from the domain, we simply compute :
-$$
-distance = R_{\infty} - \sqrt{x^2 + y^2 + z^2}
-$$
+
+$$ distance = R_{\infty} - \sqrt{x^2 + y^2 + z^2} $$
 
 The *reverse* walk on spheres starts walks from the source and propagates it's values, so we have to know where the source is inside the domain. Usually it's represent by a mesh, or some kind of geometry. The algorithm will take a point on that geometry, the source value corresponding, and propagates it's value inside the domain.
 
