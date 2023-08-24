@@ -21,7 +21,6 @@ if __name__ == '__main__':
     pde.set_query_points(query_points)
     pde.set_source_points(ws.read_pts_from_file("assets/meshpts.dat"))
     pde.set_source_value(1.0)
-    # pde.set_source_vectors(ws.read_pts_from_file("assets/meshpts_tangents.dat"))
     
     pde.solve()
     
