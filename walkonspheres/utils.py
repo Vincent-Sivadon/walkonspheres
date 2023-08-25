@@ -77,3 +77,21 @@ def _arrays_to_gpu(w_coords,w_vals,w_radius,query_points,odim):
     query_points_d = wp.from_numpy(query_points, dtype=wp.vec3f, device="cuda")
     
     return w_coords_d, w_vals_d, w_radius_d, query_points_d
+
+def _compute_rot(A,n,dx):
+    # Compute derivatives
+    rotA = np.zeros((n**3,3), dtype=np.float32)
+    for i in range(1,n-1):
+        for j in range(1,n-1):
+            for k in range(1,n-1):
+                dyAx = (A[k*n*n + i*n + j+1][0] - A[k*n*n + i*n + j-1][0])/(2.0*dx)
+                dzAx = (A[(k+1)*n*n + i*n + j][0] - A[(k-1)*n*n + i*n + j][0])/(2.0*dx)
+                dzAy = (A[(k+1)*n*n + i*n + j][1] - A[(k-1)*n*n + i*n + j][1])/(2.0*dx)
+                dxAy = (A[k*n*n + (i+1)*n + j][1] - A[k*n*n + (i-1)*n + j][1])/(2.0*dx)
+                dyAz = (A[k*n*n + i*n + (j+1)][2] - A[k*n*n + i*n + (j-1)][2])/(2.0*dx)
+                dxAz = (A[k*n*n + (i+1)*n + j][2] - A[k*n*n + (i-1)*n + j][2])/(2.0*dx)
+                rotA[k*n*n + i*n + j][0] = (dyAz - dzAy)
+                rotA[k*n*n + i*n + j][1] = (dzAx - dxAz)
+                rotA[k*n*n + i*n + j][2] = (dxAy - dyAx)
+    return rotA
+    

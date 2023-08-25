@@ -1,8 +1,9 @@
 import numpy as np
 import warp as wp
 import polyscope as ps
+from time import time
 
-from .utils import _create_solution_array, _create_walksinfo_arrays, _arrays_to_gpu
+from .utils import _create_solution_array, _create_walksinfo_arrays, _arrays_to_gpu, _compute_rot
 from .mesh_utils import _readmesh
 from .rasterize import _rasterize_vector, _rasterize_scalar
 from .polyscope_helpers import ps_init,ps_add_pcloud,ps_add_3D3,ps_add_3D1,ps_add_mesh,ps_add_sliceplace
@@ -21,7 +22,8 @@ class PoissonSolver():
         wp.init()
         A_h, A_d = _create_solution_array(len(self.query_points), self.odim)
         w_coords,w_vals,w_radius = _create_walksinfo_arrays(self.nwalks, self.odim)
-        print(w_vals.shape)
+        
+        start = time()
         if (self.odim == 1):
             nstarts = gensourcewalks_scalar(self.source_points,
                                             self.source_values,
@@ -32,6 +34,9 @@ class PoissonSolver():
                                             self.source_vectors,
                                             w_coords, w_vals, w_radius,
                                             self.sdfR, self.nwalks)
+        end = time()
+        print("Source walk generation : ", end-start)
+        start = time()
         w_coords_d, w_vals_d, w_radius_d, query_points_d =_arrays_to_gpu(w_coords,w_vals,w_radius,self.query_points,self.odim)
         if (self.odim == 1):
             self.A = _rasterize_scalar(A_h,A_d,
@@ -47,6 +52,8 @@ class PoissonSolver():
                     w_vals_d[0],w_vals_d[1],w_vals_d[2],
                     w_radius_d,
                     nstarts)
+        end = time()
+        print("Rasterization : ", end-start)
             
     def _compute_solution_magnitude(self):
         if (self.odim == 1):
@@ -57,7 +64,6 @@ class PoissonSolver():
             self.A_mag[i] = np.linalg.norm(self.A[i])
             
     def plot(self):
-        ps_init()
         pcloud_name = "Solution query points"
         pcloud = ps_add_pcloud(pcloud_name,self.query_points,len(self.query_points))
         if (self.odim == 1):
@@ -67,23 +73,16 @@ class PoissonSolver():
             ps_add_3D1(pcloud, self.A_mag, "Magnitude")
             ps_add_3D3(pcloud,self.A,"Solution")
         ps_add_sliceplace()
-        ps.show()
-    def plot_with_mesh(self, meshfile):
-        ps_init()
-        pcloud_name = "Solution query points"
-        pcloud = ps_add_pcloud(pcloud_name,self.query_points,len(self.query_points))
-        if (self.odim == 1):
-            ps_add_3D1(pcloud, self.A, "Solution")
-        elif (self.odim == 3):
-            self._compute_solution_magnitude()
-            ps_add_3D1(pcloud, self.A_mag, "Magnitude")
-            ps_add_3D3(pcloud,self.A,"Solution")
+        self.pcloud = pcloud
+    def plot_mesh(self, meshfile):
         mesh = _readmesh(meshfile)
         ps_add_mesh(mesh, "Source Mesh")
-        ps_add_sliceplace()
-        ps.show()
-        
+    def plot_rot(self, ngrid, dx):
+        B = _compute_rot(self.A,ngrid,dx)
+        print(B)
+        ps_add_3D3(self.pcloud, B, "Rotational")
     
+    # Set all parameters
     def set_query_points(self, query_points):
         self.query_points = query_points
     def set_source_points(self, source_points):

@@ -63,7 +63,7 @@ int gensourcewalks_vector(py::array_t<float> source_points,
                 a_w_vals(0,i) = float(n_source_points)*fx; // Source term
                 a_w_vals(1,i) = float(n_source_points)*fy; // Source term
                 a_w_vals(2,i) = float(n_source_points)*fz; // Source term
-                a_w_radius(i) = float(n_source_points)*ry;    // Sphere radius
+                a_w_radius(i) = ry;                        // Sphere radius
 
                 // Select random numbers for the following
                 float r1 = (float)rand() / (float)RAND_MAX;
@@ -130,7 +130,7 @@ int gensourcewalks_scalar(py::array_t<float> source_points,
                 a_w_coords(1,i) = y;   // ...
                 a_w_coords(2,i) = z;   // ...
                 a_w_vals(i) = float(n_source_points)*fy;    // Source term
-                a_w_radius(i) = float(n_source_points)*ry;    // Sphere radius
+                a_w_radius(i) = ry;    // Sphere radius
 
                 // Select random numbers for the following
                 float r1 = (float)rand() / (float)RAND_MAX;

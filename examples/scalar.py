@@ -24,4 +24,7 @@ if __name__ == '__main__':
     
     pde.solve()
     
-    pde.plot_with_mesh("assets/mesh.stl")
+    ws.ps_init()
+    pde.plot()
+    pde.plot_mesh("assets/mesh.stl")
+    ps.show()
