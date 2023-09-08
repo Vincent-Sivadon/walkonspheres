@@ -94,4 +94,3 @@ def _compute_rot(A,n,dx):
                 rotA[k*n*n + i*n + j][1] = (dzAx - dxAz)
                 rotA[k*n*n + i*n + j][2] = (dxAy - dyAx)
     return rotA
-    

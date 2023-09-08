@@ -1,5 +1,6 @@
 import warp as wp
 from math import pi
+import numpy as np
 
 @wp.func
 def green3D(R: wp.float32, d: wp.float32):
@@ -27,10 +28,10 @@ def _rasterize_vector_kernel(A: wp.array(dtype=wp.vec3f),
     pt = query_pts[i]
     
     for wid in range(nwalks):
-        fy = wp.vec3f(whx[wid],why[wid],whz[wid]) / float(nstarts)
+        fy = wp.vec3f(whx[wid],why[wid],whz[wid])
         d = wp.length(wp.vec3f(pt[0],pt[1],pt[2]) - wp.vec3f(wx[wid],wy[wid],wz[wid]))
         if (d<wr[wid]):
-            Ai += fy * green3D(wr[wid],d)
+            Ai += fy * (green3D(wr[wid],d) / float(nstarts))
     A[i] = Ai
 
 @wp.kernel
@@ -53,10 +54,10 @@ def _rasterize_scalar_kernel(A: wp.array(dtype=wp.float32),
     pt = query_pts[i]
     
     for wid in range(nwalks):
-        fy = wh[wid] / float(nstarts)
+        fy = wh[wid]
         d = wp.length(wp.vec3f(pt[0],pt[1],pt[2]) - wp.vec3f(wx[wid],wy[wid],wz[wid]))
         if (d<wr[wid]):
-            Ai += fy * green3D(wr[wid],d)
+            Ai += fy * green3D(wr[wid],d) / float(nstarts)
     A[i] = Ai
 
 def _rasterize_vector(A_h, A_d,

@@ -28,12 +28,12 @@ class PoissonSolver():
             nstarts = gensourcewalks_scalar(self.source_points,
                                             self.source_values,
                                             w_coords, w_vals, w_radius,
-                                            self.sdfR, self.nwalks)
+                                            self.sdfR, self.nwalks, self.samplevol)
         elif (self.odim == 3):
             nstarts = gensourcewalks_vector(self.source_points,
                                             self.source_vectors,
                                             w_coords, w_vals, w_radius,
-                                            self.sdfR, self.nwalks)
+                                            self.sdfR, self.nwalks, self.samplevol)
         end = time()
         print("Source walk generation : ", end-start)
         start = time()
@@ -65,7 +65,7 @@ class PoissonSolver():
             
     def plot(self):
         pcloud_name = "Solution query points"
-        pcloud = ps_add_pcloud(pcloud_name,self.query_points,len(self.query_points))
+        pcloud = ps_add_pcloud(pcloud_name,self.query_points)
         if (self.odim == 1):
             ps_add_3D1(pcloud, self.A, "Solution")
         elif (self.odim == 3):
@@ -79,7 +79,6 @@ class PoissonSolver():
         ps_add_mesh(mesh, "Source Mesh")
     def plot_rot(self, ngrid, dx):
         B = _compute_rot(self.A,ngrid,dx)
-        print(B)
         ps_add_3D3(self.pcloud, B, "Rotational")
     
     # Set all parameters
@@ -93,6 +92,8 @@ class PoissonSolver():
         self.sdfR = sdfR
     def set_solution_dimension(self,odim):
         self.odim = odim
+    def set_samplevol(self,vol):
+        self.samplevol = vol
     
     # Tools to set source value associated with source_points from constant value, array
     # Scalar :

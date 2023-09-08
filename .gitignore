@@ -1,6 +1,8 @@
 # Using https://github.com/github/gitignore/blob/master/Python.gitignore
 
-assets/
+assets/flux*
+assets/mesh*
+assets/source*
 .polyscope*
 imgui*
 

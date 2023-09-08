@@ -9,7 +9,7 @@ def ps_init():
     ps.set_navigation_style("free")
     ps.set_up_dir("z_up")
     
-def ps_add_pcloud(pcloud_name, pts, n):
+def ps_add_pcloud(pcloud_name, pts):
     return ps.register_point_cloud(pcloud_name,pts,point_render_mode='quad',radius=0.001)
 
 def ps_add_3D3(pcloud,arr,arr_name):
