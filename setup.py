@@ -25,7 +25,10 @@ setup(
     ext_modules=ext_modules,
     packages=find_packages(),
     install_requires = [
-        "warp-lang"
+        "warp-lang",
+        "numpy",
+        "polyscope",
+        "pybind11"
     ],
     #extras_require={"test": "pytest"},
     # Currently, build_ext only provides an optional "highest supported C++
