@@ -49,7 +49,7 @@ This package is an answer to difficulties encountered in inverse problems on geo
 Here we have a pipeline that can solve the direct problem without generating any mesh. This can be used in black box optimization tools.
 
 # Installation
-Just go in the folder and write
+Once you made sure you have CUDA Toolkit and a C++ compiler installed, just go in the folder and write :
 ```
 pip install .
 ```
