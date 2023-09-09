@@ -28,7 +28,8 @@ setup(
         "warp-lang",
         "numpy",
         "polyscope",
-        "pybind11"
+        "pybind11",
+        "meshio"
     ],
     #extras_require={"test": "pytest"},
     # Currently, build_ext only provides an optional "highest supported C++
