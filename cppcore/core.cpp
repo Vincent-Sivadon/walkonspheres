@@ -2,6 +2,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 #include <array>
+#include <vector>
 #include <iostream>
 #include <math.h>
 #include <cmath>
@@ -153,6 +154,33 @@ int gensourcewalks_scalar(py::array_t<float> source_points,
         return nstarts;
 }
 
+std::vector<std::vector<float>> compute_rot(py::array_t<float> A, int nx, int ny, int nz, float dx, float dy, float dz)
+{
+    std::vector<std::vector<float>> B(nx*ny*nz, std::vector<float>(3));
+    auto acc_A  = A.unchecked<2>();
+
+    for (int i=1 ; i<nx-1 ; i++)
+        for (int j=1 ; j<ny-1 ; j++)
+            for (int k=1 ; k<nz-1 ; k++) {
+                float dyAx = (acc_A(k*nz*nx + i*nx + j+1,0) - acc_A(k*nz*nx + i*nx + j-1,0))/(2.0*dy);
+                float dzAx = (acc_A((k+1)*nz*nx + i*nx + j,0) - acc_A((k-1)*nz*nx + i*nx + j,0))/(2.0*dz);
+                float dzAy = (acc_A((k+1)*nz*nx + i*nx + j,1) - acc_A((k-1)*nz*nx + i*nx + j,1))/(2.0*dz);
+                float dxAy = (acc_A(k*nz*nx + (i+1)*nx + j,1) - acc_A(k*nz*nx + (i-1)*nx + j,1))/(2.0*dx);
+                float dyAz = (acc_A(k*nz*nx + i*nx + (j+1),2) - acc_A(k*nz*nx + i*nx + (j-1),2))/(2.0*dy);
+                float dxAz = (acc_A(k*nz*nx + (i+1)*nx + j,2) - acc_A(k*nz*nx + (i-1)*nx + j,2))/(2.0*dx);
+                B[k*nz*nx + i*nx + j][0] = (dyAz - dzAy);
+                B[k*nz*nx + i*nx + j][1] = (dzAx - dxAz);
+                B[k*nz*nx + i*nx + j][2] = (dxAy - dyAx);
+                // float Bx = (dyAz - dzAy) ; float By = (dzAx - dxAz) ; float Bz = (dxAy - dyAx);
+                // float Bnorm = sqrtf(Bx*Bx + By*By * Bz*Bz);
+                // B[k*nz*nx + i*nx + j][0] *= logf(Bnorm);
+                // B[k*nz*nx + i*nx + j][1] *= logf(Bnorm);
+                // B[k*nz*nx + i*nx + j][2] *= logf(Bnorm);
+            }
+
+    return B;
+}
+
 PYBIND11_MODULE(cppcore, m) {
     m.def(
         "gensourcewalks_vector", &gensourcewalks_vector,
@@ -173,6 +201,16 @@ PYBIND11_MODULE(cppcore, m) {
         py::arg("sdfR").noconvert(),py::arg("nwalks").noconvert(),py::arg("samplevol").noconvert()
     );
 
+    m.def(
+        "compute_rot", &compute_rot,
+        py::arg("A").noconvert(),
+        py::arg("nx").noconvert(),
+        py::arg("ny").noconvert(),
+        py::arg("nz").noconvert(),
+        py::arg("dx").noconvert(),
+        py::arg("dy").noconvert(),
+        py::arg("dz").noconvert()
+    );
 
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);

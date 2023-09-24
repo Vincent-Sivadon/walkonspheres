@@ -10,21 +10,21 @@ def ps_init():
     ps.set_up_dir("z_up")
     
 def ps_add_pcloud(pcloud_name, pts):
-    return ps.register_point_cloud(pcloud_name,pts,point_render_mode='quad',radius=0.001)
+    return ps.register_point_cloud(pcloud_name,pts,point_render_mode='quad',radius=0.0)
 
 def ps_add_3D3(pcloud,arr,arr_name):
-    pcloud.add_vector_quantity(arr_name,arr, enabled=True, color=(0.471,0.110,0.890))
+    pcloud.add_vector_quantity(arr_name,arr, enabled=False, color=(0.471,0.110,0.890))
     
 def ps_add_3D1(pcloud,arr,arr_name):
     pcloud.add_scalar_quantity(arr_name,arr, enabled=False)
     
 def ps_add_mesh(mesh,name):
-    ps.register_surface_mesh(name,
+    m = ps.register_surface_mesh(name,
                              mesh.points, mesh.cells[0].data,
                              smooth_shade=True,
-                             color=(0.594,0.594,0.594),
-                             transparency=0.153)
+                             color=(0.594,0.594,0.594))
+    m.center_bounding_box()
 
-def ps_add_sliceplace():
+def ps_add_sliceplane():
     sliceplane = ps.add_scene_slice_plane()
-    sliceplane.set_pose([0.0,0.0,0.0],[0.0,1.0,0.0])
+    sliceplane.set_pose([0.0,1.0,0.0],[0.0,1.0,0.0])
