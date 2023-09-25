@@ -63,15 +63,15 @@ def compute_all(r, vol, nx,ny,nz, Lx,Ly,Lz, query_points):
 def compute_inductance(r, vol, int_curv_len):
     pde = ws.PoissonSolver()
     
-    pde.set_nwalks(1_000_000)
+    pde.set_nwalks(2_000_000)
     pde.set_sdfR(2000.0)
     pde.set_samplevol(vol)
     pde.set_solution_dimension(3)
     
     # File treatment
     start = time()
-    query_points_file = "assets/transfo_flux_query_points.dat"
-    query_tans_file   = "assets/transfo_flux_query_tans.dat"
+    query_points_file = "assets/transfo_flux_query_points_secondaire.dat"
+    query_tans_file   = "assets/transfo_flux_query_tans_secondaire.dat"
     remove_characters(query_points_file)
     remove_characters(query_tans_file)
     remove_characters("assets/transfo_tans.txt")
@@ -102,17 +102,19 @@ def compute_inductance(r, vol, int_curv_len):
         phi += np.dot(pde.A[i], query_tans[i])
     phi *= (int_curv_len/n_query)
     print("Flux       : ", phi)
-    
-    n_loops = 6.0 # serial
     n_elements = 10.0 # parallel
-    ind = n_loops * phi / n_elements
-    print("Inductance : ", ind)
+    print("Inductance : ", phi/n_elements)
+    
+    # n_loops = 6.0 # serial
+    # n_elements = 10.0 # parallel
+    # ind = n_loops * phi / n_elements
+    # print("Inductance : ", ind)
 
 
 if __name__ == '__main__':
     r = 0.002
     vol = 0.457764
-    int_curv_len = 0.647
+    int_curv_len = 3.642
 
     # Median    
     # n = 300
@@ -120,7 +122,7 @@ if __name__ == '__main__':
     # compute_all(r,vol,n,n,3,0.3,0.3,0.002,query_points)
     
     # Grid
-    # n = 61 ; L = 150.0
+    # n = 31 ; L = 150.0
     # lower_corner = [-L,-L,-L] # Lower corner grid delimiter
     # upper_corner = [L,L,L]    # Upper corner grid delimiter
     # query_points = ws.create_grid_query_pts(lower_corner, upper_corner, n)
